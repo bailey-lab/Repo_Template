@@ -1,5 +1,5 @@
 
-configfile: "config/YYYY_MM_DD_config.yaml"
+#configfile: "config/YYYY_MM_DD_config.yaml"
 
 config_path=config['config_path']
 DATE = config['date']

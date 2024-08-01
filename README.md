@@ -3,7 +3,7 @@ A template for organizing and performing analysis (adapted from https://github.c
 
 ## Directory Structure
 
-![](Repo_Template.drawio.svg)
+![](images/Repo_Template.drawio.svg)
 
 ### Prerequisites
 
@@ -31,17 +31,21 @@ mv Repo_Template My_Project
 docker build -t my_project .
 ```
 
-5. Run docker container with username and password below
+5. Run docker container with username and password below. There is a R console ()
 
 ```sh
 docker run --rm -p 8787:8787 -e USER=rstudio -e PASSWORD=yourpassword --volume ${PWD}:/home/rstudio my_project
 ```
 
 6. Open a web browser and navigate to `localhost:8787`. Log in with username `rstudio` and password `yourpassword`.
+    - When you are logged in, you can run R code in the console or open R scripts in the `src` directory.
+        - ![](images/Console.png)
+    - You will run the following commands in the terminal in RStudio.
+        - ![](images/Terminal.png)
 
 7. As I already have the `data/raw`, `config` and `scripts` directories (with the `src`, `processing`,`utils` subdirectories) made, you can start adding your data and scripts to these directories.
 
-7. Run make commands to inialize the general dictionaries.
+7. Run make commands (in the terminal) to inialize the general dictionaries.
 
 ```sh
 make dirs
@@ -70,14 +74,15 @@ output_file: "YYYY_MM_DD_final.html"
 ```
 
 9. Run the snakemake pipeline, that creates date specific subdirectories in the `data/processed`, `plots` and `reports` directories and then renders the quarto document with the information from your config file.
+
 ```sh
-snakemake -s Snakefile -c 1
+snakemake -s Snakefile -c 1 --configfile config/YYYY_MM_DD_config.yaml
 ```
 
 10. To clear all output and rerun this pipeline, run the following commands:
 
 ```sh
-snakemake -s Snakefile --delete-all-output -c 1
+snakemake -s Snakefile --delete-all-output -c 1 --configfile config/YYYY_MM_DD_config.yaml
 make clean
 ```
 

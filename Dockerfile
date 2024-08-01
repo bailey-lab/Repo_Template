@@ -17,5 +17,5 @@ RUN pip3 install pulp==2.7.0
 EXPOSE 8787
 
 # Installing R packages
-RUN R -e "install.packages(c('yaml','here','tidyverse', 'ggplot2', 'dplyr', 'readr', 'stringr', 'purrr','plotly','flextable','officer'))"
+RUN R -e "install.packages(c('quarto','yaml','here','tidyverse', 'ggplot2', 'dplyr', 'readr', 'stringr', 'purrr','plotly','flextable','officer'))"
 RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')"
