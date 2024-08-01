@@ -1,0 +1,121 @@
+---
+title: "`r params$title`"
+author: "Sean Connelly"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+    embed-resources: true
+params:
+  title: ""
+  config: ""
+---
+
+```{r,include=FALSE}
+#| echo: false
+#| output: false
+here::i_am("report_template.qmd")
+library(stringr)
+library(tidyverse)
+library(officer)
+library(flextable)
+library(yaml)
+library(plotly)
+library(here)
+config <- yaml.load_file(here(params$config))
+#config <- yaml.load_file(here("config/YYYY_MM_DD_config.yaml"))
+
+# Load config -------------------------------------------------------------
+date <- config$date
+project <- config$project_name
+file_path <- config$sample_summary_csv
+```
+
+# Experiment description
+
+- **Date**: `r config$date`
+
+- **Project Name**: `r config$project_name`
+
+- **Description**: `r config$description`
+
+# Sample Size, by location
+
+```{r}
+#knitr::include_graphics(here(paste0("plots/",config$date,"/",config$date,"_tbl.png")))
+
+# Reformat sample ID column -----------------------------------------------
+samp_sum <- read.csv(here(file_path)) %>% 
+  dplyr::slice(-1:-2) %>% 
+  dplyr::rename("Sample.ID"="MIP") %>% 
+  mutate(ID = stringr::str_split_fixed(Sample.ID, "-(?=[A-Z])",2)[,1],
+         location=stringr::str_split_fixed(Sample.ID, "-(?=[A-Z])",2)[,2]) 
+
+# Summarize location data -------------------------------------------------
+sum_tbl <- samp_sum %>% 
+  select(ID,location) %>% 
+  group_by(location) %>% 
+  summarise(n = n())
+
+# Create table ------------------------------------------------------------
+border_style <-  officer::fp_border(color="black", width=3)
+table_plt <- sum_tbl %>%  
+  flextable::flextable() %>% 
+  flextable::autofit() %>% 
+  flextable::width(j=c(1,2), width = 2) %>% 
+  flextable::set_header_labels(
+    location = "Location",
+    n  = "Sample Size") %>% 
+  flextable::border_remove() %>% 
+  # add  box theme
+  flextable::theme_box() %>%
+  # change borders
+  flextable::border(border = border_style) %>% 
+  flextable::border(border = border_style, part = "header") %>% 
+  flextable::align(align = "center",part = "all")
+flextable::save_as_image(table_plt, path = here(paste0('plots/',date,'/',date,'_tbl.png')), 
+                         webshot = "webshot2")
+```
+
+```{r}
+# Show table ------------------------------------------------------------
+table_plt
+```
+
+# Interactive Heatmap
+
+```{r}
+# reformat matrix ---------------------------------------------------------
+samp_sum <- read.csv(here(file_path)) %>% 
+  dplyr::slice(-1:-2) %>% 
+  dplyr::rename("Sample.ID"="MIP") %>%
+  column_to_rownames("Sample.ID") %>% 
+  mutate(across(everything(),as.numeric)) %>% 
+  mutate(across(where(is.numeric), ~ log2(. + 1)))
+
+
+# Get sample IDs and MIPs -------------------------------------------------
+samps <- rownames(samp_sum)
+mips <- colnames(samp_sum)
+
+
+# create graph ------------------------------------------------------------
+fig <- plot_ly(
+  z = as.matrix(samp_sum),
+  x = mips,
+  y = samps,
+  type = "heatmap",
+  colorscale = "Viridis",
+  colorbar = list(title = list(text = "<b>log2(UMI_Counts + 1)</b>", side = "top"))) %>%
+  plotly::layout(
+    xaxis = list(title = "mips", side = "bottom"),
+    yaxis = list(title = "samples"))
+htmlwidgets::saveWidget(fig,
+                        here(paste0('plots/',date,'/',date,'_sample_probe_UMI.html')),
+                        selfcontained = F, libdir = "lib")
+
+# show graph ------------------------------------------------------------
+fig
+```
