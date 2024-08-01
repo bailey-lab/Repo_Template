@@ -1,0 +1,11 @@
+config_path: "config/YYYY_MM_DD_config.yaml"
+
+date: "YYYY_MM_DD"
+
+project_name: "my_project"
+
+description: "Cool analysis of something"
+
+sample_summary_csv: "data/raw/UMI_counts.csv"
+
+output_file: "YYYY_MM_DD_final.html"
