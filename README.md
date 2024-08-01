@@ -13,7 +13,7 @@ A template for organizing and performing analysis (adapted from https://github.c
 
 1. Create a repository from this template according to these instructions: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
 
-2. Clone the repository
+2. Clone the repository to your home computer.
 
 ```sh
 git clone https://github.com/bailey-lab/Repo_Template.git
@@ -23,15 +23,16 @@ git clone https://github.com/bailey-lab/Repo_Template.git
 
 ```sh
 mv Repo_Template My_Project
+cd My_Project
 ```
 
-4. Build docker image (rename with the title of your project)
+4. Build docker image (rename with the title of your project) in a terminal window of your project directory.
 
 ```sh
 docker build -t my_project .
 ```
 
-5. Run docker container with username and password below. There is a R console ()
+5. Run the docker container with the username and password below in a terminal window of your project directory.
 
 ```sh
 docker run --rm -p 8787:8787 -e USER=rstudio -e PASSWORD=yourpassword --volume ${PWD}:/home/rstudio my_project
@@ -43,7 +44,7 @@ docker run --rm -p 8787:8787 -e USER=rstudio -e PASSWORD=yourpassword --volume $
     - You will run the following commands in the terminal in RStudio.
         - ![](images/Terminal.png)
 
-7. As I already have the `data/raw`, `config` and `scripts` directories (with the `src`, `processing`,`utils` subdirectories) made, you can start adding your data and scripts to these directories.
+7. As I already have the `data/raw`, `config` and `src` directories (with the `analysis`, `processing`,`utils` subdirectories) made, you can start adding your data and scripts to these directories.
 
 7. Run make commands (in the terminal) to inialize the general dictionaries.
 
@@ -73,7 +74,7 @@ sample_summary_csv: "data/raw/UMI_counts.csv"
 output_file: "YYYY_MM_DD_final.html"
 ```
 
-9. Run the snakemake pipeline, that creates date specific subdirectories in the `data/processed`, `plots` and `reports` directories and then renders the quarto document with the information from your config file.
+9. Run the snakemake pipeline (in the terminal), that creates date specific subdirectories in the `data/processed`, `plots` and `reports` directories and then renders the quarto document with the information from your config file.
 
 ```sh
 snakemake -s Snakefile -c 1 --configfile config/YYYY_MM_DD_config.yaml
