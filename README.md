@@ -74,6 +74,13 @@ output_file: "YYYY_MM_DD_final.html"
 snakemake -s Snakefile -c 1
 ```
 
+10. To clear all output and rerun this pipeline, run the following commands:
+
+```sh
+snakemake -s Snakefile --delete-all-output -c 1
+make clean
+```
+
 ## What is usually in these directories?
 
 - `data`: 
